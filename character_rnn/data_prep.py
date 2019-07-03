@@ -1,7 +1,4 @@
 import numpy as np
-import torch
-from torch import nn
-import torch.nn.functional as F
 
 
 def one_hot_encode(arr, n_labels):
@@ -66,7 +63,7 @@ def get_encoded():
     # encode the text
     encoded = np.array([char2int[ch] for ch in text])
 
-    return encoded
+    return chars, encoded
 
 
 if __name__ == '__main__':
@@ -75,7 +72,7 @@ if __name__ == '__main__':
     #
     # print(one_hot)
 
-    encoded = get_encoded()
+    _, encoded = get_encoded()
     batches = get_batches(encoded, 8, 50)
     x, y = next(batches)
     # printing out the first 10 items in a sequence
