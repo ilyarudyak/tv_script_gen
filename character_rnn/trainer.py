@@ -5,6 +5,7 @@ from data_prep import *
 from model import CharRNN
 import time, pickle
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
 
 args = Namespace(
     n_hidden=512,
@@ -150,12 +151,65 @@ def load_model(model_filename):
     return model
 
 
+def predict(model, char, h=None, top_k=None):
+    """ Given a character, predict the next character.
+        Returns the predicted character and the hidden state.
+    """
+
+    # tensor inputs
+    x = np.array([[model.char2int[char]]])
+    x = one_hot_encode(x, len(model.chars))
+    inputs = torch.from_numpy(x)
+
+    # detach hidden state from history
+    h = tuple([each.data for each in h])
+    # get the output of the model
+    out, h = model(inputs, h)
+
+    # get the character probabilities
+    p = F.softmax(out, dim=1).data
+
+    # get top characters
+    if top_k is None:
+        top_ch = np.arange(len(model.chars))
+    else:
+        p, top_ch = p.topk(top_k)
+        top_ch = top_ch.numpy().squeeze()
+
+    # select the likely next character with some element of randomness
+    p = p.numpy().squeeze()
+    char = np.random.choice(top_ch, p=p / p.sum())
+
+    # return the encoded value of the predicted char and the hidden state
+    return model.int2char[char], h
+
+
+def sample(model, size, prime='The', top_k=None):
+    model.eval()  # eval mode
+
+    # First off, run through the prime characters
+    chars = [ch for ch in prime]
+    h = model.init_hidden(1)
+    for ch in prime:
+        char, h = predict(model, ch, h, top_k=top_k)
+
+    chars.append(char)
+
+    # Now pass in the previous character and get a new one
+    for ii in range(size):
+        char, h = predict(model, chars[-1], h, top_k=top_k)
+        chars.append(char)
+
+    return ''.join(chars)
+
+
 if __name__ == '__main__':
-    chars, encoded = get_encoded()
-    char_rnn_model = CharRNN(chars, args.n_hidden, args.n_layers)
+    # chars, encoded = get_encoded()
+    # char_rnn_model = CharRNN(chars, args.n_hidden, args.n_layers)
+    #
+    # train(char_rnn_model, encoded, epochs=args.n_epochs, batch_size=args.batch_size,
+    #       seq_length=args.seq_length, lr=args.lr, print_every=args.print_every)
 
-    train(char_rnn_model, encoded, epochs=args.n_epochs, batch_size=args.batch_size,
-          seq_length=args.seq_length, lr=args.lr, print_every=args.print_every)
-
-    # filename = 'losses/losses_1562247135.pickle'
-    # plot_losses(filename)
+    model_filename = 'models/char_rnn_20_epochs_1562264474'
+    model = load_model(model_filename)
+    print(sample(model, 1000, prime='Anna', top_k=5))
