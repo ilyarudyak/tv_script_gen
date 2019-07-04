@@ -11,7 +11,7 @@ args = Namespace(
     n_layers=2,
     batch_size=128,
     seq_length=100,
-    n_epochs=2,
+    n_epochs=20,
     lr=0.001,
     print_every=10
 )
@@ -147,6 +147,7 @@ def load_model(model_filename):
 
     model = CharRNN(chars=chars, n_hidden=n_hidden, n_layers=n_layers)
     model.load_state_dict(state_dict=state_dict)
+    return model
 
 
 if __name__ == '__main__':
