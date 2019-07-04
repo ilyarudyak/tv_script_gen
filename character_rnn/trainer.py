@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from data_prep import *
 from model import CharRNN
+import time, pickle
 
 
 args = Namespace(
@@ -10,19 +11,21 @@ args = Namespace(
     n_layers=2,
     batch_size=128,
     seq_length=100,
-    n_epochs=1
+    n_epochs=1,
+    lr=0.001,
+    print_every=10
 )
 
 
-def train(net, data, epochs=10, batch_size=10, seq_length=50,
+def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
           lr=0.001, clip=5, val_frac=0.1, print_every=10):
     """ Training a network
 
         Arguments
         ---------
 
-        net: CharRNN network
-        data: text data to train the network
+        model: CharRNN network
+        train_data: text data to train the network
         epochs: Number of epochs to train
         batch_size: Number of mini-sequences per mini-batch, aka batch size
         seq_length: Number of character steps per mini-batch
@@ -32,78 +35,84 @@ def train(net, data, epochs=10, batch_size=10, seq_length=50,
         print_every: Number of steps for printing training and validation loss
 
     """
-    net.train()
+    model.train()
 
-    opt = torch.optim.Adam(net.parameters(), lr=lr)
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
 
     # create training and validation data
-    val_idx = int(len(data) * (1 - val_frac))
-    data, val_data = data[:val_idx], data[val_idx:]
+    val_idx = int(len(train_data) * (1 - val_frac))
+    train_data, val_data = train_data[:val_idx], train_data[val_idx:]
 
     counter = 0
-    n_chars = len(net.chars)
-    for e in range(epochs):
-        # initialize hidden state
-        h = net.init_hidden(batch_size)
+    n_chars = len(model.chars)
+    train_losses, val_losses = [], []
+    for epoch in range(epochs):
 
-        for x, y in get_batches(data, batch_size, seq_length):
+        # boiler plate code
+        h_train = model.init_hidden(batch_size)
+
+        cur_train_losses = []
+        for x_train, y_train in get_tensor_batches(train_data, batch_size, seq_length, n_chars):
             counter += 1
 
-            # One-hot encode our data and make them Torch tensors
-            x = one_hot_encode(x, n_chars)
-            inputs, targets = torch.from_numpy(x), torch.from_numpy(y)
+            # boiler plate code
+            h_train = tuple([each.data for each in h_train])
+            model.zero_grad()
 
-            # Creating new variables for the hidden state, otherwise
-            # we'd backprop through the entire training history
-            h = tuple([each.data for each in h])
-
-            # zero accumulated gradients
-            net.zero_grad()
-
-            # get the output from the model
-            output, h = net(inputs, h)
-
-            # calculate the loss and perform backprop
-            loss = criterion(output, targets.view(batch_size * seq_length).long())
+            ################# forward pass #################
+            output, h_train = model(x_train, h_train)
+            loss = criterion(output, y_train.view(batch_size * seq_length).long())
             loss.backward()
-            # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
-            nn.utils.clip_grad_norm_(net.parameters(), clip)
+            cur_train_losses.append(loss.item())
+            # nn.utils.clip_grad_norm_(model.parameters(), clip)
             opt.step()
+            ################# forward pass #################
 
             # loss stats
             if counter % print_every == 0:
-                # Get validation loss
-                val_h = net.init_hidden(batch_size)
-                val_losses = []
-                net.eval()
-                for x, y in get_batches(val_data, batch_size, seq_length):
-                    # One-hot encode our data and make them Torch tensors
-                    x = one_hot_encode(x, n_chars)
-                    x, y = torch.from_numpy(x), torch.from_numpy(y)
+                print("Epoch: {}/{}...".format(epoch + 1, epochs),
+                      "Step: {}...".format(counter))
 
-                    # Creating new variables for the hidden state, otherwise
-                    # we'd backprop through the entire training history
-                    val_h = tuple([each.data for each in val_h])
+        # Get validation loss
+        h_val = model.init_hidden(batch_size)
+        cur_val_losses = []
+        model.eval()
+        for x_val, y_val in get_tensor_batches(val_data, batch_size, seq_length, n_chars):
 
-                    inputs, targets = x, y
+            # boiler plate code
+            h_val = tuple([each.data for each in h_val])
 
-                    output, val_h = net(inputs, val_h)
-                    val_loss = criterion(output, targets.view(batch_size * seq_length).long())
+            ################# forward pass #################
+            output_val, h_val = model(x_val, h_val)
+            val_loss = criterion(output_val, y_val.view(batch_size * seq_length).long())
+            cur_val_losses.append(val_loss.item())
+            ################# forward pass #################
 
-                    val_losses.append(val_loss.item())
+        model.train()
 
-                net.train()  # reset to train mode after iterating through validation data
+        cur_train_loss, cur_val_loss = np.mean(cur_train_losses), np.mean(cur_val_losses)
+        train_losses.append(cur_train_loss)
+        val_losses.append(cur_val_loss)
+        print("Epoch: {}/{}...".format(epoch + 1, epochs),
+              "Train Loss: {:.4f}...".format(cur_train_loss),
+              "Validation Loss: {:.4f}".format(cur_val_loss))
 
-                print("Epoch: {}/{}...".format(e + 1, epochs),
-                      "Step: {}...".format(counter),
-                      "Loss: {:.4f}...".format(loss.item()),
-                      "Val Loss: {:.4f}".format(np.mean(val_losses)))
+    save_losses(train_losses, val_losses)
+
+
+def save_losses(train_losses, val_losses):
+    losses_dict = {
+        'train_losses': train_losses,
+        'val_losses': val_losses
+    }
+    with open('losses_' + str(int(time.time())) + '.pickle', 'wb') as f:
+        pickle.dump(losses_dict, f)
 
 
 if __name__ == '__main__':
     chars, encoded = get_encoded()
-    ch_rnn = CharRNN(chars, args.n_hidden, args.n_layers)
+    char_rnn_model = CharRNN(chars, args.n_hidden, args.n_layers)
 
-    train(ch_rnn, encoded, epochs=args.n_epochs, batch_size=args.batch_size,
-          seq_length=args.seq_length, lr=0.001, print_every=10)
+    train(char_rnn_model, encoded, epochs=args.n_epochs, batch_size=args.batch_size,
+          seq_length=args.seq_length, lr=args.lr, print_every=args.print_every)

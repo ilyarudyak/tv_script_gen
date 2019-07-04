@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 
 def one_hot_encode(arr, n_labels):
@@ -45,6 +46,32 @@ def get_batches(arr, batch_size, seq_length):
         except IndexError:
             y[:, :-1], y[:, -1] = x[:, 1:], arr[:, 0]
         yield x, y
+
+
+def get_tensor_batches(arr, batch_size, seq_length, n_chars):
+    """
+    This function is the same as get_batches(), but
+    it one-hot encodes x. It also convert x and y into tensors.
+    """
+    n_batches = int(arr.size / (batch_size * seq_length))
+    arr = arr[:(n_batches * batch_size * seq_length)]
+    arr = arr.reshape((batch_size, -1))
+
+    for n in range(0, arr.shape[1], seq_length):
+        # The features
+        x = arr[:, n:(n + seq_length)]
+        # The targets, shifted by one
+        y = np.zeros_like(x)
+        try:
+            y[:, :-1], y[:, -1] = x[:, 1:], arr[:, n + seq_length]
+        except IndexError:
+            y[:, :-1], y[:, -1] = x[:, 1:], arr[:, 0]
+
+        x = one_hot_encode(x, n_chars)
+        x, y = torch.from_numpy(x), torch.from_numpy(y)
+
+        yield x, y
+
 
 
 def get_encoded():
