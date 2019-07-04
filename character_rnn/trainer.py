@@ -11,7 +11,7 @@ args = Namespace(
     n_layers=2,
     batch_size=128,
     seq_length=100,
-    n_epochs=20,
+    n_epochs=2,
     lr=0.001,
     print_every=10
 )
