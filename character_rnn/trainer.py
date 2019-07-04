@@ -11,7 +11,7 @@ args = Namespace(
     n_layers=2,
     batch_size=128,
     seq_length=100,
-    n_epochs=1,
+    n_epochs=20,
     lr=0.001,
     print_every=10
 )
@@ -108,6 +108,12 @@ def save_losses(train_losses, val_losses):
     }
     with open('losses_' + str(int(time.time())) + '.pickle', 'wb') as f:
         pickle.dump(losses_dict, f)
+
+
+def load_losses(filename):
+    with open(filename, 'rb') as f:
+        d = pickle.load(f)
+    return d['train_losses'], d['val_losses']
 
 
 if __name__ == '__main__':
