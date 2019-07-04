@@ -236,3 +236,6 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
+/character_rnn/models/
+/character_rnn/losses/
+/character_rnn/data/

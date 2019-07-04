@@ -3,7 +3,7 @@ from torch import nn
 
 class CharRNN(nn.Module):
 
-    def __init__(self, tokens, n_hidden=256, n_layers=2,
+    def __init__(self, chars, n_hidden=256, n_layers=2,
                  drop_prob=0.5, lr=0.001):
         super().__init__()
         self.drop_prob = drop_prob
@@ -12,15 +12,15 @@ class CharRNN(nn.Module):
         self.lr = lr
 
         # creating character dictionaries
-        self.chars = tokens
+        self.chars = chars
         self.int2char = dict(enumerate(self.chars))
         self.char2int = {ch: ii for ii, ch in self.int2char.items()}
 
         ## TODO: define the layers of the model
-        self.lstm = nn.LSTM(len(tokens), n_hidden, n_layers,
+        self.lstm = nn.LSTM(len(chars), n_hidden, n_layers,
                             dropout=drop_prob, batch_first=True)
         self.dropout = nn.Dropout(drop_prob)
-        self.output = nn.Linear(n_hidden, len(tokens))
+        self.output = nn.Linear(n_hidden, len(chars))
 
     def forward(self, x, hidden):
         """ Forward pass through the network.

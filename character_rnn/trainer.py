@@ -4,7 +4,7 @@ from torch import nn
 from data_prep import *
 from model import CharRNN
 import time, pickle
-
+import matplotlib.pyplot as plt
 
 args = Namespace(
     n_hidden=512,
@@ -80,7 +80,6 @@ def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
         cur_val_losses = []
         model.eval()
         for x_val, y_val in get_tensor_batches(val_data, batch_size, seq_length, n_chars):
-
             # boiler plate code
             h_val = tuple([each.data for each in h_val])
 
@@ -101,6 +100,7 @@ def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
               flush=True)
 
     save_losses(train_losses, val_losses)
+    save_model(model)
 
 
 def save_losses(train_losses, val_losses):
@@ -118,9 +118,43 @@ def load_losses(filename):
     return d['train_losses'], d['val_losses']
 
 
+def plot_losses(filename):
+    train_losses, val_losses = load_losses(filename)
+    plt.plot(train_losses, label='Training loss')
+    plt.plot(val_losses, label='Validation loss')
+    plt.legend(frameon=False)
+    plt.show()
+
+
+def save_model(model):
+    model_filename = 'char_rnn_' + str(args.n_epochs) + '_epochs_' + str(int(time.time()))
+
+    checkpoint = {'n_hidden': model.n_hidden,
+                  'n_layers': model.n_layers,
+                  'state_dict': model.state_dict(),
+                  'chars': model.chars}
+
+    with open(model_filename, 'wb') as f:
+        torch.save(checkpoint, f)
+
+
+def load_model(model_filename):
+    with open(model_filename, 'rb') as f:
+        checkpoint = torch.load(f)
+
+    n_hidden, n_layers, state_dict, chars = checkpoint['n_hidden'], checkpoint['n_layers'], \
+                                            checkpoint['state_dict'], checkpoint['chars']
+
+    model = CharRNN(chars=chars, n_hidden=n_hidden, n_layers=n_layers)
+    model.load_state_dict(state_dict=state_dict)
+
+
 if __name__ == '__main__':
     chars, encoded = get_encoded()
     char_rnn_model = CharRNN(chars, args.n_hidden, args.n_layers)
 
     train(char_rnn_model, encoded, epochs=args.n_epochs, batch_size=args.batch_size,
           seq_length=args.seq_length, lr=args.lr, print_every=args.print_every)
+
+    # filename = 'losses/losses_1562247135.pickle'
+    # plot_losses(filename)
