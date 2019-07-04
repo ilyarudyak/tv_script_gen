@@ -72,7 +72,8 @@ def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
             # loss stats
             if counter % print_every == 0:
                 print("Epoch: {}/{}...".format(epoch + 1, epochs),
-                      "Step: {}...".format(counter))
+                      "Step: {}...".format(counter),
+                      flush=True)
 
         # Get validation loss
         h_val = model.init_hidden(batch_size)
@@ -96,7 +97,8 @@ def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
         val_losses.append(cur_val_loss)
         print("Epoch: {}/{}...".format(epoch + 1, epochs),
               "Train Loss: {:.4f}...".format(cur_train_loss),
-              "Validation Loss: {:.4f}".format(cur_val_loss))
+              "Validation Loss: {:.4f}".format(cur_val_loss),
+              flush=True)
 
     save_losses(train_losses, val_losses)
 
