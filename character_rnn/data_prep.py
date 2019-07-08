@@ -73,7 +73,6 @@ def get_tensor_batches(arr, batch_size, seq_length, n_chars):
         yield x, y
 
 
-
 def get_encoded():
     with open('data/anna.txt', 'r') as f:
         text = f.read()

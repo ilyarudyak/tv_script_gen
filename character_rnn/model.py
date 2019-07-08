@@ -26,7 +26,7 @@ class CharRNN(nn.Module):
         """ Forward pass through the network.
             These inputs are x, and the hidden/cell state `hidden`. """
 
-        ## TODO: Get the outputs and the new hidden state from the lstm
+        ## TODO: Get the outputs and the new hidden state from the LSTM
         x, hidden = self.lstm(x, hidden)
         x = self.dropout(x)
         x = x.contiguous().view(-1, self.n_hidden)
