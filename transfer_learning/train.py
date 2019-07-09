@@ -10,7 +10,6 @@ def train_model(model, trainloader, testloader, criterion, optimizer,
                 epochs=1, steps=0, running_loss=0, print_every=100):
     for epoch in range(epochs):
         for inputs, labels in trainloader:
-            print('start training ...')
             steps += 1
 
             optimizer.zero_grad()
@@ -23,7 +22,7 @@ def train_model(model, trainloader, testloader, criterion, optimizer,
             running_loss += loss.item()
 
             if steps % 5 == 0:
-                print(f'step:{steps}...')
+                print(f'----------> step:{steps}...')
 
             if steps % print_every == 0:
                 test_loss = 0
