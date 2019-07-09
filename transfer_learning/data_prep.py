@@ -51,9 +51,11 @@ if __name__ == '__main__':
     testloader = torch.utils.data.DataLoader(test_data, batch_size=32)
     data_iter = iter(testloader)
 
-    images, labels = next(data_iter)
-    fig, axes = plt.subplots(figsize=(10, 4), ncols=4)
-    for ii in range(4):
-        ax = axes[ii]
-        helper.imshow(images[ii], ax=ax, normalize=False)
-    plt.show()
+    # images, labels = next(data_iter)
+    # fig, axes = plt.subplots(figsize=(10, 4), ncols=4)
+    # for ii in range(4):
+    #     ax = axes[ii]
+    #     helper.imshow(images[ii], ax=ax, normalize=False)
+    # plt.show()
+
+    print(len(trainloader))

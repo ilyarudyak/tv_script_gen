@@ -7,9 +7,10 @@ from data_prep import *
 
 
 def train_model(model, trainloader, testloader, criterion, optimizer,
-                epochs=1, steps=0, running_loss=0, print_every=5):
+                epochs=1, steps=0, running_loss=0, print_every=100):
     for epoch in range(epochs):
         for inputs, labels in trainloader:
+            print('start training ...')
             steps += 1
 
             optimizer.zero_grad()
@@ -20,6 +21,9 @@ def train_model(model, trainloader, testloader, criterion, optimizer,
             optimizer.step()
 
             running_loss += loss.item()
+
+            if steps % 5 == 0:
+                print(f'step:{steps}...')
 
             if steps % print_every == 0:
                 test_loss = 0
@@ -38,9 +42,9 @@ def train_model(model, trainloader, testloader, criterion, optimizer,
                         equals = top_class == labels.view(*top_class.shape)
                         accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
 
-                print(f"Epoch {epoch + 1}/{epochs}.. "
-                      f"Train loss: {running_loss / print_every:.3f}.. "
-                      f"Test loss: {test_loss / len(testloader):.3f}.. "
+                print(f"Epoch {epoch + 1}/{epochs}... "
+                      f"Train loss: {running_loss / print_every:.3f}... "
+                      f"Test loss: {test_loss / len(testloader):.3f}... "
                       f"Test accuracy: {accuracy / len(testloader):.3f}")
                 running_loss = 0
                 model.train()
