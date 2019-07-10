@@ -1,8 +1,8 @@
 from argparse import Namespace
 import torch
 
-from data_prep import get_batch
-from model import args_model, SentimentRNN
+from .data_prep import get_batch
+from .model import args_model, SentimentRNN
 
 import numpy as np
 import torch.nn as nn
@@ -70,7 +70,7 @@ def train(net, train_loader, valid_loader, optimizer, criterion,
                       "Step: {}...".format(counter),
                       "Loss: {:.6f}...".format(loss.item()),
                       "Val Loss: {:.6f}".format(np.mean(val_losses)))
-    filename = 'models/model_' + epochs + '_' + str(int(time.time())) + '.pth'
+    filename = 'models/model_' + str(epochs) + '_' + str(int(time.time())) + '.pth'
     torch.save(net.state_dict(), filename)
 
 
