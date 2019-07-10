@@ -116,26 +116,6 @@ def test_model(net, test_loader, batch_size=args_model.batch_size):
     print("Test accuracy: {:.3f}".format(test_acc))
 
 
-def inference():
-    pass
-
-
-def tokenize_review(test_review):
-    _, _, vocab_to_int = get_data()
-    test_review = test_review.lower() # lowercase
-    # get rid of punctuation
-    test_text = ''.join([c for c in test_review if c not in punctuation])
-
-    # splitting by spaces
-    test_words = test_text.split()
-
-    # tokens
-    test_ints = []
-    test_ints.append([vocab_to_int[word] for word in test_words])
-
-    return test_ints
-
-
 if __name__ == '__main__':
     train_loader, valid_loader, test_loader = get_batch()
 
