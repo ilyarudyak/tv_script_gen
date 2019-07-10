@@ -1,12 +1,13 @@
 from argparse import Namespace
 import torch
 
-from data_prep import get_batch
+from data_prep import get_batch, get_data
 from model import args_model, SentimentRNN
 
 import numpy as np
 import torch.nn as nn
 import time
+
 
 args_train = Namespace(
     lr=0.001,
@@ -115,6 +116,26 @@ def test_model(net, test_loader, batch_size=args_model.batch_size):
     print("Test accuracy: {:.3f}".format(test_acc))
 
 
+def inference():
+    pass
+
+
+def tokenize_review(test_review):
+    _, _, vocab_to_int = get_data()
+    test_review = test_review.lower() # lowercase
+    # get rid of punctuation
+    test_text = ''.join([c for c in test_review if c not in punctuation])
+
+    # splitting by spaces
+    test_words = test_text.split()
+
+    # tokens
+    test_ints = []
+    test_ints.append([vocab_to_int[word] for word in test_words])
+
+    return test_ints
+
+
 if __name__ == '__main__':
     train_loader, valid_loader, test_loader = get_batch()
 
@@ -122,9 +143,13 @@ if __name__ == '__main__':
                        args_model.embedding_dim, args_model.hidden_dim, args_model.n_layers)
 
     criterion = nn.BCELoss()
-    optimizer = torch.optim.Adam(net.parameters(), lr=args_train.lr)
-    train(net, train_loader, valid_loader, optimizer, criterion)
+    # optimizer = torch.optim.Adam(net.parameters(), lr=args_train.lr)
+    # train(net, train_loader, valid_loader, optimizer, criterion)
 
-    # filename = 'models/model_1_1562780581.pth'
-    # net.load_state_dict(torch.load(filename))
-    # test_model(net, test_loader)
+    filename = 'models/model_1_1562780581.pth'
+    net.load_state_dict(torch.load(filename))
+    test_model(net, test_loader)
+
+
+    
+
