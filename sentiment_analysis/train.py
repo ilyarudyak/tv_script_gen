@@ -1,8 +1,8 @@
 from argparse import Namespace
 import torch
 
-from .data_prep import get_batch
-from .model import args_model, SentimentRNN
+from data_prep import get_batch
+from model import args_model, SentimentRNN
 
 import numpy as np
 import torch.nn as nn
