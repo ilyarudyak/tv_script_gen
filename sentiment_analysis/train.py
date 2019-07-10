@@ -6,10 +6,11 @@ from model import args_model, SentimentRNN
 
 import numpy as np
 import torch.nn as nn
+import time
 
 args_train = Namespace(
     lr=0.001,
-    epochs=4,
+    epochs=1,
     print_every=100,
     clip=5
 )
@@ -37,7 +38,7 @@ def train(net, train_loader, valid_loader, optimizer, criterion,
             # zero accumulated gradients
             net.zero_grad()
 
-            # get the output from the model
+            # get the output from the models
             output, h = net(inputs, h)
 
             # calculate the loss and perform backprop
@@ -69,6 +70,8 @@ def train(net, train_loader, valid_loader, optimizer, criterion,
                       "Step: {}...".format(counter),
                       "Loss: {:.6f}...".format(loss.item()),
                       "Val Loss: {:.6f}".format(np.mean(val_losses)))
+    filename = 'models/model_' + epochs + '_' + str(int(time.time())) + '.pth'
+    torch.save(net.state_dict(), filename)
 
 
 if __name__ == '__main__':

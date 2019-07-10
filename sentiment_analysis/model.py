@@ -15,12 +15,12 @@ args_model = Namespace(
 
 class SentimentRNN(nn.Module):
     """
-    The RNN model that will be used to perform Sentiment analysis.
+    The RNN models that will be used to perform Sentiment analysis.
     """
 
     def __init__(self, vocab_size, output_size, embedding_dim, hidden_dim, n_layers, drop_prob=0.5):
         """
-        Initialize the model by setting up the layers.
+        Initialize the models by setting up the layers.
         """
         super(SentimentRNN, self).__init__()
 
@@ -42,7 +42,7 @@ class SentimentRNN(nn.Module):
 
     def forward(self, x, hidden):
         """
-        Perform a forward pass of our model on some input and hidden state.
+        Perform a forward pass of our models on some input and hidden state.
         """
         batch_size = x.size(0)
 
