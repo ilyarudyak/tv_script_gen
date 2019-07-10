@@ -146,7 +146,7 @@ if __name__ == '__main__':
     # optimizer = torch.optim.Adam(net.parameters(), lr=args_train.lr)
     # train(net, train_loader, valid_loader, optimizer, criterion)
 
-    filename = 'models/model_1_1562780581.pth'
+    filename = 'models/model_4_1562783667.pth'
     net.load_state_dict(torch.load(filename))
     test_model(net, test_loader)
 
