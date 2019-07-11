@@ -2,6 +2,7 @@ from helper import load_preprocess
 from torch.utils.data import TensorDataset, DataLoader
 import torch
 import numpy as np
+import torch.nn as nn
 
 def create_lookup_tables(text):
     """
@@ -74,6 +75,10 @@ if __name__ == '__main__':
     print(sample_y.shape)
     print(sample_y)
 
+    embedding = nn.Embedding(num_embeddings=50,
+                             embedding_dim=25)
+    sample_x_embed = embedding(sample_x)
+    print(sample_x_embed.shape)
 
 
 
