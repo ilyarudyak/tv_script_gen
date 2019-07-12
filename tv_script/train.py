@@ -22,7 +22,7 @@ train_params = Namespace(
     embedding_dim=256,
     hidden_dim=256,
     n_layers=2,
-    show_every_n_batches=3000,
+    show_every_n_batches=300,
 )
 
 
@@ -73,8 +73,8 @@ def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batc
 
             # printing loss stats
             if batch_i % show_every_n_batches == 0:
-                print('Epoch: {:>4}/{:<4}  Loss: {}\n'.format(
-                    epoch_i, n_epochs, np.average(batch_losses)))
+                print('Epoch: {:>4}/{:<4}  Batch: {} Loss: {}\n'.format(
+                    epoch_i, n_epochs, batch_i, np.average(batch_losses)))
                 batch_losses = []
 
     # returns a trained rnn
