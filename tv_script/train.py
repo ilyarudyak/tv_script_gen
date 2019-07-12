@@ -15,7 +15,7 @@ data_params = Namespace(
 )
 
 train_params = Namespace(
-    num_epochs=20,
+    num_epochs=2,
     learning_rate=0.0005,
     vocab_size=21388,  # len(vocab_to_int),
     output_size=21388,  # len(vocab_to_int),
