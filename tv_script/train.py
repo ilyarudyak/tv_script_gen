@@ -48,27 +48,26 @@ def forward_back_prop(net, optimizer, criterion, inp, target, hidden):
     return loss.item(), hidden
 
 
-def train_rnn(net, batch_size, optimizer, criterion, n_epochs,
-              train_loader, show_every_n_batches=100):
+def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batches=100):
     batch_losses = []
 
-    net.train()
+    rnn.train()
 
     print("Training for %d epoch(s)..." % n_epochs)
     for epoch_i in range(1, n_epochs + 1):
 
         # initialize hidden state
-        hidden = net.init_hidden(batch_size)
+        hidden = rnn.init_hidden(batch_size)
 
         for batch_i, (inputs, labels) in enumerate(train_loader, 1):
 
             # make sure you iterate over completely full batches, only
             n_batches = len(train_loader.dataset) // batch_size
-            if batch_i > n_batches:
+            if (batch_i > n_batches):
                 break
 
             # forward, back prop
-            loss, hidden = forward_back_prop(net, optimizer, criterion, inputs, labels, hidden)
+            loss, hidden = forward_back_prop(rnn, optimizer, criterion, inputs, labels, hidden)
             # record loss
             batch_losses.append(loss)
 
@@ -79,7 +78,7 @@ def train_rnn(net, batch_size, optimizer, criterion, n_epochs,
                 batch_losses = []
 
     # returns a trained rnn
-    return net
+    return rnn
 
 
 if __name__ == '__main__':

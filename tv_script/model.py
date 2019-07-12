@@ -47,7 +47,7 @@ class TvScriptNet(nn.Module):
 
         x = x.long()
         embeds = self.embedding(x)
-        lstm_out, hidden = self.lstm(embeds)
+        lstm_out, hidden = self.lstm(embeds, hidden)
 
         lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
 
@@ -67,7 +67,7 @@ class TvScriptNet(nn.Module):
         :return: hidden state of dims (n_layers, batch_size, hidden_dim)
         """
         # Implement function
-
-        # initialize hidden state with zero weights, and move to GPU if available
-
-        return None
+        weight = next(self.parameters()).data
+        hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_(),
+                  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_())
+        return hidden
