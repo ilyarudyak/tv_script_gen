@@ -239,3 +239,4 @@ pip-selfcheck.json
 /character_rnn/models/
 /character_rnn/losses/
 /character_rnn/data/
+/sentiment_analysis/models/

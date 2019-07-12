@@ -8,5 +8,16 @@
         </list>
       </option>
     </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="train.data_params" />
+          <option value="torch.LongTensor" />
+          <option value="helper.SPECIAL_WORDS" />
+          <option value="helper.load_preprocess" />
+          <option value="helper.load_model" />
+        </list>
+      </option>
+    </inspection_tool>
   </profile>
 </component>

@@ -94,16 +94,19 @@ def get_batch(batch_size=50):
 
 
 if __name__ == '__main__':
+    train_x, val_x, test_x, train_y, val_y, test_y = split_data()
 
-    train_loader, valid_loader, test_loader = get_batch()
+    print(train_x.shape)
 
-    # obtain one batch of training data
-    dataiter = iter(train_loader)
-    sample_x, sample_y = dataiter.next()
-
-    print('Sample input size: ', sample_x.size())  # batch_size, seq_length
-    print('Sample input: \n', sample_x)
-    print()
-    print('Sample label size: ', sample_y.size())  # batch_size
-    print('Sample label: \n', sample_y)
+    # train_loader, valid_loader, test_loader = get_batch()
+    #
+    # # obtain one batch of training data
+    # dataiter = iter(train_loader)
+    # sample_x, sample_y = dataiter.next()
+    #
+    # print('Sample input size: ', sample_x.size())  # batch_size, seq_length
+    # print('Sample input: \n', sample_x)
+    # print()
+    # print('Sample label size: ', sample_y.size())  # batch_size
+    # print('Sample label: \n', sample_y)
 

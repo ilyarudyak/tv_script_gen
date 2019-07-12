@@ -5,6 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/transfer_learning" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/character_rnn" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/sentiment_analysis" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tv_script" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -66,7 +66,7 @@ def train(model, train_data, epochs=10, batch_size=10, seq_length=50,
             loss = criterion(output, y_train.view(batch_size * seq_length).long())
             loss.backward()
             cur_train_losses.append(loss.item())
-            # nn.utils.clip_grad_norm_(model.parameters(), clip)
+            # nn.utils.clip_grad_norm_(models.parameters(), clip)
             opt.step()
             ################# forward pass #################
 
@@ -163,7 +163,7 @@ def predict(model, char, h=None, top_k=None):
 
     # detach hidden state from history
     h = tuple([each.data for each in h])
-    # get the output of the model
+    # get the output of the models
     out, h = model(inputs, h)
 
     # get the character probabilities

@@ -16,7 +16,7 @@ class CharRNN(nn.Module):
         self.int2char = dict(enumerate(self.chars))
         self.char2int = {ch: ii for ii, ch in self.int2char.items()}
 
-        ## TODO: define the layers of the model
+        ## TODO: define the layers of the models
         self.lstm = nn.LSTM(len(chars), n_hidden, n_layers,
                             dropout=drop_prob, batch_first=True)
         self.dropout = nn.Dropout(drop_prob)
